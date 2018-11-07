@@ -1,0 +1,27 @@
+# CHANGE TO YOURS
+server:
+  ip: 0.0.0.0
+  port: 50055 # standard port
+
+# CHOOSE image to test.
+#image_path: images/cat.jpg
+image_path: images/dog.jpg
+
+default_model: mobilenet_v2
+
+# FIXED values for image preprocessing.
+models:
+  mobilenet_v2:
+    input_layer: input:0
+    output_layer: MobilenetV2/Predictions/Reshape_1:0
+    graph_path: tmp/mobilenet_v2.pb
+    labels_path: tmp/labels.txt
+
+log_path: tmp/log
+
+# FIXED values for image preprocessing.
+image:
+  height: 224
+  width: 224
+  mean: 0
+  std: 255

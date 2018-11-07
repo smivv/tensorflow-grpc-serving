@@ -1,0 +1,5 @@
+yaml
+numpy
+grpcio>=1.12.0
+tensorflow>=1.4.0
+grpcio-tools>=1.12.0

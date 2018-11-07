@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package Service;
+
+service Recognition {
+    rpc Recognize (stream Request) returns (stream Response) {}
+}
+
+message Request {
+    Status status = 1;
+    Image image = 2;
+}
+
+message Response {
+    Status status = 1;
+    repeated Label label = 2;
+}
+
+message Status {
+    uint32 code = 1;
+    string text = 2;
+}
+
+message Image {
+    bytes data = 1;
+    string format = 2;
+}
+
+message Label {
+    uint32 code = 1;
+    string text = 2;
+    float probability = 3;
+}
