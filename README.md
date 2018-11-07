@@ -1,4 +1,4 @@
-# Tensorflow recognition server & client written in Python & gRPC
+# Tensorflow serving written in Python & gRPC
 
 ## Installing
 
