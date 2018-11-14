@@ -64,7 +64,7 @@ class Classifier:
                 return tf.image.decode_gif(fr, name="gif_reader")
 
             # Load image bytes
-            image_reader = tf.case(
+            image = tf.case(
                 {
                     tf.equal(ext, tf.constant('jpg', dtype=tf.string)):
                         lambda: read_jpg(file_reader),
@@ -79,10 +79,28 @@ class Classifier:
                 exclusive=True
             )
 
-            float_caster = tf.cast(image_reader, tf.float32)
-            dims_expander = tf.expand_dims(float_caster, 0)
-            resized = tf.image.resize_bilinear(dims_expander, [input_height, input_width])
-            self.image_output = tf.divide(tf.subtract(resized, [input_mean]), [input_std])
+            # Convert input image and transform to [0; 1) range
+            if image.dtype != tf.float32:
+                image = tf.image.convert_image_dtype(image, dtype=tf.float32)
+
+            # Central crop does not work without that
+            image.set_shape((None, None, None))
+
+            # Accidentally it increases overall accuracy
+            image = tf.image.central_crop(image, central_fraction=0.875)
+
+            # Resize the image to the specified height and width.
+            if input_height and input_height:
+                image = tf.expand_dims(image, 0)
+                image = tf.image.resize_bilinear(image, [input_height, input_width], align_corners=False)
+
+            # Transform to [-1; 1) range
+            self.image_output = tf.multiply(tf.subtract(image, 0.5), 2.0)
+
+            # float_caster = tf.cast(image, tf.float32)
+            # dims_expander = tf.expand_dims(float_caster, 0)
+            # resized = tf.image.resize_bilinear(dims_expander, [input_height, input_width])
+            # self.image_output = tf.divide(tf.subtract(resized, input_mean), input_std)
 
         self.image_sess = tf.Session(graph=self.image_graph)
 
